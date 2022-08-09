@@ -1,16 +1,14 @@
 package org.example;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.example.pages.ProductListPage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class ProductTest {
@@ -27,36 +25,23 @@ public class ProductTest {
         webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     }
 
-    @Test
-    void buyProductTest() throws InterruptedException {
-        String productName = "Huawei P10";
+    @ParameterizedTest
+    @ValueSource(strings = {"Huawei P10", "Samsung Galaxy S8", "Apple iPhone 8 Plus"})
+    void buyProductTest(String productName) {
         webDriver.get("http://192.168.235.13:3000/");
-        webDriver.findElement(By.xpath("//button[.='LOGIN']"))
-                .click();
-        webDriver.findElement(By.xpath("//input[contains(@id, 'Username')]")).sendKeys("admin");
-        webDriver.findElement(By.xpath("//input[contains(@id, 'Password')]")).sendKeys("admin");
-        webDriver.findElement(By.xpath("//button[.='Submit']")).click();
 
-        List<WebElement> products = webDriver.findElements(By.className("product"));
-
-        products.stream()
-                .filter(product -> product.getText().contains(productName))
-                .findFirst()
-                .orElseThrow()
-                .findElement(By.xpath(".//*[text()='See more']"))
-                .click();
-
-        webDriver.findElement(By.xpath("//button[.='Add to cart']"))
-                .click();
-
-        new WebDriverWait(webDriver, 2).until(ExpectedConditions
-                .presenceOfElementLocated(By.xpath("//*[contains(text(),'Item added to your cart.')]")));
-        webDriver.findElement(By.xpath("//a[.='CART']")).click();
-        webDriver.findElement(By.xpath("//button[.='Checkout']")).click();
-        webDriver.findElement(By.xpath("//button[.='Confirm']")).click();
-
-        new WebDriverWait(webDriver, 2).until(ExpectedConditions
-                .presenceOfElementLocated(By.xpath("//*[contains(text(),\"Your order has been received. The items you've ordered will be sent to your address.\")]")));
-        webDriver.findElement(By.xpath("//button[.='OK']")).click();
+        new ProductListPage(webDriver)
+                .getHeaderElement()
+                .login("admin", "admin")
+                .selectProduct(productName)
+                .clickAddToCart()
+                .checkProductName(productName)
+                .checkProductWasAdded()
+                .getHeaderElement()
+                .goToCart()
+                .checkout()
+                .confirm()
+                .checkOrderHasBeenReceived()
+                .clickOk();
     }
 }
