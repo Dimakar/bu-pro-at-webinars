@@ -1,30 +1,13 @@
 package org.example;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.example.pages.ProductListPage;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.openqa.selenium.WebDriver;
 
-import java.util.concurrent.TimeUnit;
+public class ProductTest extends BaseTest {
 
-public class ProductTest {
-    private WebDriver webDriver;
-
-    @AfterEach
-    void tearDown() {
-        webDriver.quit();
-    }
-
-    @BeforeEach
-    void setUp() {
-        webDriver = WebDriverManager.chromedriver().create();
-        webDriver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-    }
-
+    @DisplayName("Добавление в корзину товара и его покупка")
     @ParameterizedTest
     @ValueSource(strings = {"Huawei P10", "Samsung Galaxy S8", "Apple iPhone 8 Plus"})
     void buyProductTest(String productName) {
