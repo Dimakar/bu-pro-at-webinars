@@ -6,6 +6,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class CartPage extends BasePage {
     public CartPage(WebDriver webDriver) {
         super(webDriver);
@@ -34,6 +39,17 @@ public class CartPage extends BasePage {
     @Step("Нажать кнопку OK")
     public CartPage clickOk() {
         webDriver.findElement(By.xpath("//button[.='OK']")).click();
+        return this;
+    }
+
+    @Step("Проверить содержимое корзины")
+    public CartPage checkCart(String... productNames) {
+        List<String> products = webDriver.findElements(By.xpath("//div[@class='cart-items']//tbody/tr"))
+                .stream()
+                .map(el -> el.findElement(By.xpath("//td[./a]")).getText())
+                .collect(Collectors.toList());
+
+        assertThat(products).containsExactlyInAnyOrder(productNames);
         return this;
     }
 }
