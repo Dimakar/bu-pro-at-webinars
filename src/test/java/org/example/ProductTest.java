@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+@DisplayName("Покупка продуктов")
 public class ProductTest extends BaseTest {
 
     @DisplayName("Добавление в корзину товара и его покупка")
@@ -22,6 +23,7 @@ public class ProductTest extends BaseTest {
                 .checkProductWasAdded()
                 .getHeaderElement()
                 .goToCart()
+                .checkCart(productName)
                 .checkout()
                 .confirm()
                 .checkOrderHasBeenReceived()
