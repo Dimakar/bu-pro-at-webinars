@@ -9,6 +9,11 @@ import java.time.Duration;
 import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Selenide.$x;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class CartPage extends BasePage {
 
     @Step("Нажать кнопку Checkout")
@@ -41,6 +46,17 @@ public class CartPage extends BasePage {
     public CartPage checkCart(String... productNames) {
         $$x("//div[@class='cart-items']//tbody/tr//a")
                 .shouldHave(CollectionCondition.exactTextsCaseSensitiveInAnyOrder(productNames));
+        return this;
+    }
+
+    @Step("Проверить содержимое корзины")
+    public CartPage checkCart(String... productNames) {
+        List<String> products = webDriver.findElements(By.xpath("//div[@class='cart-items']//tbody/tr"))
+                .stream()
+                .map(el -> el.findElement(By.xpath("//td[./a]")).getText())
+                .collect(Collectors.toList());
+
+        assertThat(products).containsExactlyInAnyOrder(productNames);
         return this;
     }
 }
