@@ -1,4 +1,4 @@
-package org.example;
+package org.example.test.ui;
 
 import com.github.javafaker.Faker;
 import org.example.dto.UserData;
