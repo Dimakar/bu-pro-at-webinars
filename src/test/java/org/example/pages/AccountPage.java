@@ -1,16 +1,14 @@
 package org.example.pages;
 
+import com.codeborne.selenide.Condition;
 import io.qameta.allure.Step;
 import org.example.dto.UserData;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.time.Duration;
+
+import static com.codeborne.selenide.Selenide.$x;
 
 public class AccountPage extends BasePage {
-    public AccountPage(WebDriver webDriver) {
-        super(webDriver);
-    }
 
     @Step("Проверить поля юзера")
     public AccountPage checkUserData(UserData userData) {
@@ -31,9 +29,10 @@ public class AccountPage extends BasePage {
 
     @Step("Проверить, что поле {fieldName} = {fieldValue}")
     private AccountPage checkUserField(String fieldName, String fieldValue) {
-        assertThat(webDriver.findElement(By.xpath("//p[./b[contains(text(), '" + fieldName + "')]]")).getText().trim())
-                .as("Field with name = '" + fieldName + "' should be equal to value '" + fieldValue + "'")
-                .isEqualTo((fieldName + ": " + fieldValue).trim());
+        $x("//p[./b[contains(text(), '" + fieldName + "')]]")
+                .shouldBe(Condition.text((fieldName + ": " + fieldValue))
+                                .because("Field with name = '" + fieldName + "' should be equal to value '" + fieldValue + "'"),
+                        Duration.ofSeconds(2));
         return this;
     }
 

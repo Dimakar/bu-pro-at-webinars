@@ -2,15 +2,20 @@ package org.example;
 
 import com.github.javafaker.Faker;
 import org.example.dto.UserData;
+import org.example.extensions.UITestExtension;
 import org.example.pages.ProductListPage;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
+import static com.codeborne.selenide.Selenide.open;
+
 @DisplayName("Регистрация юзеров")
-public class RegisterNewUserTest extends BaseTest {
+@ExtendWith(UITestExtension.class)
+public class RegisterNewUserTest {
 
     public static Stream<UserData> testDataUser() {
         Faker faker = new Faker();
@@ -32,9 +37,9 @@ public class RegisterNewUserTest extends BaseTest {
     @ParameterizedTest
     @MethodSource("testDataUser")
     void registerNewUserTest(UserData userData) {
-        webDriver.get("http://192.168.235.13:3000/");
+        open("");
 
-        new ProductListPage(webDriver)
+        new ProductListPage()
                 .getHeaderElement()
                 .clickLoginButton()
                 .clickRegisterHere()
