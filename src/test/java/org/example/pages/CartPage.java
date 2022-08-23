@@ -1,55 +1,46 @@
 package org.example.pages;
 
+import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.Condition;
 import io.qameta.allure.Step;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.time.Duration;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.codeborne.selenide.Selenide.$$x;
+import static com.codeborne.selenide.Selenide.$x;
 
 public class CartPage extends BasePage {
-    public CartPage(WebDriver webDriver) {
-        super(webDriver);
-    }
 
-    // TODO: 11.08.2022 везде одинаковые названия шагов 
     @Step("Нажать кнопку Checkout")
     public CartPage checkout() {
-        webDriver.findElement(By.xpath("//button[.='Checkout']")).click();
+        $x("//button[.='Checkout']").click();
         return this;
     }
 
     @Step("Нажать кнопку Confirm")
     public CartPage confirm() {
-        webDriver.findElement(By.xpath("//button[.='Confirm']")).click();
+        $x("//button[.='Confirm']").click();
         return this;
     }
 
     @Step("Проверить, что заказ успешно оформлен")
     public CartPage checkOrderHasBeenReceived() {
-        new WebDriverWait(webDriver, 2).until(ExpectedConditions
-                .presenceOfElementLocated(By.xpath("//*[contains(text(),\"Your order has been received. The items you've ordered will be sent to your address.\")]")));
+        $x("//div[@class='success']/p")
+                .shouldHave(Condition.text("Your order has been received. The items you've ordered will be sent to your address."),
+                        Duration.ofSeconds(2));
         return this;
     }
 
     @Step("Нажать кнопку OK")
     public CartPage clickOk() {
-        webDriver.findElement(By.xpath("//button[.='OK']")).click();
+        $x("//button[.='OK']").click();
         return this;
     }
 
     @Step("Проверить содержимое корзины")
     public CartPage checkCart(String... productNames) {
-        List<String> products = webDriver.findElements(By.xpath("//div[@class='cart-items']//tbody/tr"))
-                .stream()
-                .map(el -> el.findElement(By.xpath("//td[./a]")).getText())
-                .collect(Collectors.toList());
-
-        assertThat(products).containsExactlyInAnyOrder(productNames);
+        $$x("//div[@class='cart-items']//tbody/tr//a")
+                .shouldHave(CollectionCondition.exactTextsCaseSensitiveInAnyOrder(productNames));
         return this;
     }
 }

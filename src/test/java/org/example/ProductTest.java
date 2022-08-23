@@ -1,20 +1,25 @@
 package org.example;
 
+import org.example.extensions.UITestExtension;
 import org.example.pages.ProductListPage;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import static com.codeborne.selenide.Selenide.open;
+
 @DisplayName("Покупка продуктов")
-public class ProductTest extends BaseTest {
+@ExtendWith(UITestExtension.class)
+public class ProductTest {
 
     @DisplayName("Добавление в корзину товара и его покупка")
     @ParameterizedTest
     @ValueSource(strings = {"Huawei P10", "Samsung Galaxy S8", "Apple iPhone 8 Plus"})
     void buyProductTest(String productName) {
-        webDriver.get("http://192.168.235.13:3000/");
+        open("");
 
-        new ProductListPage(webDriver)
+        new ProductListPage()
                 .getHeaderElement()
                 .login("admin", "admin")
                 .selectProduct(productName)
