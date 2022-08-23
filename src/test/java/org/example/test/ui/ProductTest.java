@@ -1,4 +1,4 @@
-package org.example;
+package org.example.test.ui;
 
 import org.example.extensions.UITestExtension;
 import org.example.pages.ProductListPage;
