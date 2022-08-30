@@ -2,7 +2,7 @@ package org.example.pages;
 
 import com.codeborne.selenide.Condition;
 import io.qameta.allure.Step;
-import org.example.dto.UserData;
+import org.example.dto.CreateUserRequestDto;
 
 import java.time.Duration;
 
@@ -11,11 +11,11 @@ import static com.codeborne.selenide.Selenide.$x;
 public class AccountPage extends BasePage {
 
     @Step("Проверить поля юзера")
-    public AccountPage checkUserData(UserData userData) {
-        checkUserField("Username", userData.getUserName() == null ? "" : userData.getUserName())
-                .checkUserField("E-mail", userData.getEmail() == null ? "" : userData.getEmail())
-                .checkUserField("Billing Address", userData.getAddress() == null ? "" : userData.getAddress())
-                .checkUserField("Phone", userData.getPhoneNumber() == null ? "" : userData.getPhoneNumber());
+    public AccountPage checkUserData(CreateUserRequestDto createUserRequestDto) {
+        checkUserField("Username", createUserRequestDto.getUserName() == null ? "" : createUserRequestDto.getUserName())
+                .checkUserField("E-mail", createUserRequestDto.getEmail() == null ? "" : createUserRequestDto.getEmail())
+                .checkUserField("Billing Address", createUserRequestDto.getAddress() == null ? "" : createUserRequestDto.getAddress())
+                .checkUserField("Phone", createUserRequestDto.getPhoneNumber() == null ? "" : createUserRequestDto.getPhoneNumber());
         return this;
     }
     @Step("Проверить поля юзера")

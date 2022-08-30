@@ -1,7 +1,7 @@
 package org.example.test.ui;
 
 import com.github.javafaker.Faker;
-import org.example.dto.UserData;
+import org.example.dto.CreateUserRequestDto;
 import org.example.extensions.UITestExtension;
 import org.example.pages.ProductListPage;
 import org.junit.jupiter.api.DisplayName;
@@ -17,16 +17,16 @@ import static com.codeborne.selenide.Selenide.open;
 @ExtendWith(UITestExtension.class)
 public class RegisterNewUserTest {
 
-    public static Stream<UserData> testDataUser() {
+    public static Stream<CreateUserRequestDto> testDataUser() {
         Faker faker = new Faker();
-        return Stream.of(UserData.builder()
+        return Stream.of(CreateUserRequestDto.builder()
                         .userName(faker.name().lastName())
                         .address(faker.address().fullAddress())
                         .email(faker.internet().emailAddress())
                         .password(faker.internet().password())
                         .phoneNumber(faker.phoneNumber().phoneNumber())
                         .build(),
-                UserData.builder()
+                CreateUserRequestDto.builder()
                         .userName(faker.name().lastName())
                         .password(faker.internet().password())
                         .build()
@@ -36,17 +36,17 @@ public class RegisterNewUserTest {
     @DisplayName("Создание нового юзера")
     @ParameterizedTest
     @MethodSource("testDataUser")
-    void registerNewUserTest(UserData userData) {
+    void registerNewUserTest(CreateUserRequestDto createUserRequestDto) {
         open("");
 
         new ProductListPage()
                 .getHeaderElement()
                 .clickLoginButton()
                 .clickRegisterHere()
-                .inputNewUserData(userData)
+                .inputNewUserData(createUserRequestDto)
                 .submit()
                 .getHeaderElement()
                 .clickAccountButton()
-                .checkUserData(userData);
+                .checkUserData(createUserRequestDto);
     }
 }

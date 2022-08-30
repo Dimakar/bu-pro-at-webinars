@@ -1,13 +1,15 @@
 package org.example.test.api;
 
 import com.github.javafaker.Faker;
-import org.example.dto.UserData;
+import org.assertj.core.api.SoftAssertions;
+import org.example.dto.CreateUserRequestDto;
+import org.example.dto.CreateUserResponseDto;
 import org.example.extensions.ApiTestExtension;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.modelmapper.ModelMapper;
 
 import java.util.stream.Stream;
 
@@ -17,9 +19,9 @@ import static io.restassured.RestAssured.given;
 @ExtendWith(ApiTestExtension.class)
 public class ApiUserRegisterTest {
 
-    public static Stream<UserData> testDataUser() {
+    public static Stream<CreateUserRequestDto> testDataUser() {
         Faker faker = new Faker();
-        return Stream.of(UserData.builder()
+        return Stream.of(CreateUserRequestDto.builder()
                         .userName(faker.name().lastName())
                         .address(faker.address().fullAddress())
                         .email(faker.internet().emailAddress())
@@ -36,22 +38,28 @@ public class ApiUserRegisterTest {
     @DisplayName("/api/auth/register")
     @ParameterizedTest()
     @MethodSource("testDataUser")
-    void apiUserRegisterTest(UserData userData) {
-        given()
-                // TODO: 25.08.2022 переписать, чтобы можно было отправлять объект
-                .body("{\n" +
-                        "  \"address\": \"" + userData.getAddress() + "\",\n" +
-                        "  \"email\": \"" + userData.getEmail() + "\",\n" +
-                        "  \"password\": \"" + userData.getPassword() + "\",\n" +
-                        "  \"phone\": \"" + userData.getPhoneNumber() + "\",\n" +
-                        "  \"username\": \"" + userData.getUserName() + "\"\n" +
-                        "}")
+    void apiUserRegisterTest(CreateUserRequestDto createUserRequestDto) {
+        CreateUserResponseDto responseDto = given()
+                .body(createUserRequestDto)
                 .post("/api/auth/register")
                 .then()
                 .statusCode(201)
-                .body("address", Matchers.equalTo(userData.getAddress()))
-                .body("email", Matchers.equalTo(userData.getEmail()))
-                .body("phone", Matchers.equalTo(userData.getPhoneNumber()))
-                .body("username", Matchers.equalTo(userData.getUserName()));
+                .extract()
+                .body()
+                .as(CreateUserResponseDto.class);
+
+
+        SoftAssertions softAssertions = new SoftAssertions();
+        softAssertions.assertThat(responseDto)
+                .usingRecursiveComparison()
+                .ignoringExpectedNullFields()
+                .ignoringFields("password")
+                .isEqualTo(new ModelMapper().map(createUserRequestDto, CreateUserResponseDto.class));
+        softAssertions.assertThat(responseDto.getOrders()).isEmpty();
+        softAssertions.assertThat(responseDto.getToken()).isNotEmpty();
+        softAssertions.assertThat(responseDto.getId()).isNotEmpty();
+        softAssertions.assertThat(responseDto.getPassword()).isNotEmpty();
+
+        softAssertions.assertAll();
     }
 }
