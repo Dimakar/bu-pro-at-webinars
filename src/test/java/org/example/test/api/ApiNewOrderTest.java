@@ -1,79 +1,81 @@
 package org.example.test.api;
 
 import com.github.javafaker.Faker;
-import io.restassured.http.Header;
-import org.example.dto.*;
+import io.qameta.allure.junit5.AllureJunit5;
+import org.example.dto.CreateUserRequestDto;
+import org.example.dto.Order;
+import org.example.dto.PhoneDto;
+import org.example.endpoints.ApiCatalogEndpoint;
+import org.example.endpoints.ApiOrderEndpoint;
+import org.example.endpoints.ApiUserEndpoint;
+import org.example.endpoints.ApiUserRegisterEndpoint;
 import org.example.extensions.ApiTestExtension;
+import org.example.testdata.User;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.example.testdata.TestDataGenerator.generateUserDto;
 
 @DisplayName("/api/order")
-@ExtendWith(ApiTestExtension.class)
+@ExtendWith({ApiTestExtension.class, AllureJunit5.class})
 public class ApiNewOrderTest {
 
-    CreateUserResponseDto user;
-    PhoneDto phone;
+    static User user;
+    static PhoneDto phone;
+
+    List<Order> startOrders;
+
+    public static Stream<Order> orders() {
+        return Stream.of(Order.builder()
+                        .dateCreated(LocalDateTime.now().withNano(0))
+                        .name(phone.getInfo().getName())
+                        .price(phone.getInfo().getPrice())
+                        .quantity(1)
+                        .build(),
+                Order.builder()
+                        .dateCreated(LocalDateTime.now().withNano(0))
+                        .name(phone.getInfo().getName())
+                        .price(phone.getInfo().getPrice())
+                        .quantity(2)
+                        .build()
+        );
+    }
+
+    @BeforeAll
+    static void beforeAll() {
+        Faker faker = new Faker();
+        phone = new ApiCatalogEndpoint().getProducts().get(faker.number().numberBetween(0, 9));
+        CreateUserRequestDto requestDto = generateUserDto();
+        user = User.builder()
+                .username(requestDto.getUserName())
+                .password(requestDto.getPassword())
+                .build();
+        user.setToken(new ApiUserRegisterEndpoint().registerUser(requestDto).getToken());
+    }
 
     @BeforeEach
     void setUp() {
-        Faker faker = new Faker();
-        phone = List.of(given()
-                .get("/api/catalog")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .as(PhoneDto[].class)).get(faker.number().numberBetween(0, 9));
-
-        user = given()
-                .body(CreateUserRequestDto.builder()
-                        .userName(faker.name().lastName())
-                        .address(faker.address().fullAddress())
-                        .email(faker.internet().emailAddress())
-                        .password(faker.internet().password())
-                        .phoneNumber(faker.phoneNumber().phoneNumber())
-                        .build())
-                .post("/api/auth/register")
-                .then()
-                .statusCode(201)
-                .extract()
-                .body()
-                .as(CreateUserResponseDto.class);
+        startOrders = new ApiUserEndpoint().getUser(user).getOrders();
     }
 
-    @Test
-    void apiNewOrderTest() {
-        Order order = Order.builder()
-                .dateCreated(LocalDateTime.now().withNano(0))
-                .name(phone.getInfo().getName())
-                .price(phone.getInfo().getPrice())
-                .quantity(1)
-                .build();
+    @ParameterizedTest
+    @MethodSource("orders")
+    void apiNewOrderTest(Order order) {
+        new ApiOrderEndpoint().createOrder(user, order);
 
-        given()
-                .header(new Header("Authorization", "Bearer " + user.getToken()))
-                .body(OrderRequestDto.builder().order(order).build())
-                .post("/api/order")
-                .then()
-                .statusCode(200);
+        List<Order> endOrders = new ApiUserEndpoint().getUser(user).getOrders();
 
-        CreateUserResponseDto userResponseDto = given()
-                .header(new Header("Authorization", "Bearer " + user.getToken()))
-                .get("/api/user")
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(CreateUserResponseDto.class);
-
-        assertThat(userResponseDto.getOrders())
-                .containsExactlyInAnyOrder(order);
+        startOrders.add(order);
+        assertThat(endOrders)
+                .containsExactlyInAnyOrderElementsOf(startOrders);
     }
 }
