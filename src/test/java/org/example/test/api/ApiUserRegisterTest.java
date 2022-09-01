@@ -1,9 +1,11 @@
 package org.example.test.api;
 
 import com.github.javafaker.Faker;
+import io.qameta.allure.junit5.AllureJunit5;
 import org.assertj.core.api.SoftAssertions;
 import org.example.dto.CreateUserRequestDto;
 import org.example.dto.CreateUserResponseDto;
+import org.example.endpoints.ApiUserRegisterEndpoint;
 import org.example.extensions.ApiTestExtension;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,25 +15,23 @@ import org.modelmapper.ModelMapper;
 
 import java.util.stream.Stream;
 
-import static io.restassured.RestAssured.given;
-
 @DisplayName("/api/auth/register")
-@ExtendWith(ApiTestExtension.class)
+@ExtendWith({ApiTestExtension.class, AllureJunit5.class})
 public class ApiUserRegisterTest {
 
     public static Stream<CreateUserRequestDto> testDataUser() {
         Faker faker = new Faker();
         return Stream.of(CreateUserRequestDto.builder()
-                        .userName(faker.name().lastName())
+                        .userName(faker.name().lastName() + faker.number().numberBetween(0, 9))
                         .address(faker.address().fullAddress())
                         .email(faker.internet().emailAddress())
                         .password(faker.internet().password())
                         .phoneNumber(faker.phoneNumber().phoneNumber())
+                        .build(),
+                CreateUserRequestDto.builder()
+                        .userName(faker.name().lastName())
+                        .password(faker.internet().password())
                         .build()
-//                UserData.builder()
-//                        .userName(faker.name().lastName())
-//                        .password(faker.internet().password())
-//                        .build()
         );
     }
 
@@ -39,15 +39,7 @@ public class ApiUserRegisterTest {
     @ParameterizedTest()
     @MethodSource("testDataUser")
     void apiUserRegisterTest(CreateUserRequestDto createUserRequestDto) {
-        CreateUserResponseDto responseDto = given()
-                .body(createUserRequestDto)
-                .post("/api/auth/register")
-                .then()
-                .statusCode(201)
-                .extract()
-                .body()
-                .as(CreateUserResponseDto.class);
-
+        CreateUserResponseDto responseDto = new ApiUserRegisterEndpoint().registerUser(createUserRequestDto);
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(responseDto)
@@ -62,4 +54,6 @@ public class ApiUserRegisterTest {
 
         softAssertions.assertAll();
     }
+
+    // TODO: 01.09.2022 add negative tests
 }

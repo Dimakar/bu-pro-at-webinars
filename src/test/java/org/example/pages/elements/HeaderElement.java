@@ -5,6 +5,7 @@ import io.qameta.allure.Step;
 import org.example.pages.AccountPage;
 import org.example.pages.CartPage;
 import org.example.pages.ProductListPage;
+import org.example.testdata.User;
 
 import static com.codeborne.selenide.Selenide.$x;
 
@@ -22,6 +23,10 @@ public class HeaderElement {
         passwordInput.sendKeys(password);
         submitButton.click();
         return new ProductListPage();
+    }
+
+    public ProductListPage login(User user) {
+        return login(user.getUsername(), user.getPassword());
     }
 
     @Step("Нажать кнопку Login")

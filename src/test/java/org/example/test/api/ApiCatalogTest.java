@@ -1,5 +1,6 @@
 package org.example.test.api;
 
+import io.qameta.allure.junit5.AllureJunit5;
 import org.example.extensions.ApiTestExtension;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static io.restassured.RestAssured.given;
 
 @DisplayName("/api/catalog")
-@ExtendWith(ApiTestExtension.class)
+@ExtendWith({ApiTestExtension.class, AllureJunit5.class})
 public class ApiCatalogTest {
 
     @DisplayName("/api/catalog")
