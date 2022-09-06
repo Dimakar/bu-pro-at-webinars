@@ -4,6 +4,7 @@ import com.github.javafaker.Faker;
 import org.example.dto.CreateUserRequestDto;
 import org.example.extensions.UITestExtension;
 import org.example.pages.ProductListPage;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,11 +13,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.codeborne.selenide.Selenide.open;
+import static org.example.testdata.TestDataManager.deleteUser;
 
 @DisplayName("Регистрация юзеров")
 @ExtendWith(UITestExtension.class)
 public class RegisterNewUserTest {
 
+    CreateUserRequestDto createUserRequestDto;
     public static Stream<CreateUserRequestDto> testDataUser() {
         Faker faker = new Faker();
         return Stream.of(CreateUserRequestDto.builder()
@@ -37,6 +40,7 @@ public class RegisterNewUserTest {
     @ParameterizedTest
     @MethodSource("testDataUser")
     void registerNewUserTest(CreateUserRequestDto createUserRequestDto) {
+        this.createUserRequestDto = createUserRequestDto;
         open("");
 
         new ProductListPage()
@@ -48,5 +52,10 @@ public class RegisterNewUserTest {
                 .getHeaderElement()
                 .clickAccountButton()
                 .checkUserData(createUserRequestDto);
+    }
+
+    @AfterEach
+    void tearDown() {
+        deleteUser(createUserRequestDto.getUserName());
     }
 }
