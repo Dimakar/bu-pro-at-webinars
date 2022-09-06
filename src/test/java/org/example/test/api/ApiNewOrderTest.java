@@ -2,15 +2,14 @@ package org.example.test.api;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.junit5.AllureJunit5;
-import org.example.dto.CreateUserRequestDto;
 import org.example.dto.Order;
 import org.example.dto.PhoneDto;
 import org.example.endpoints.ApiCatalogEndpoint;
 import org.example.endpoints.ApiOrderEndpoint;
 import org.example.endpoints.ApiUserEndpoint;
-import org.example.endpoints.ApiUserRegisterEndpoint;
 import org.example.extensions.ApiTestExtension;
 import org.example.testdata.User;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +22,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.example.testdata.TestDataGenerator.generateUserDto;
+import static org.example.testdata.TestDataManager.createNewUser;
+import static org.example.testdata.TestDataManager.deleteUser;
 
 @DisplayName("/api/order")
 @ExtendWith({ApiTestExtension.class, AllureJunit5.class})
@@ -54,12 +54,7 @@ public class ApiNewOrderTest {
     static void beforeAll() {
         Faker faker = new Faker();
         phone = new ApiCatalogEndpoint().getProducts().get(faker.number().numberBetween(0, 9));
-        CreateUserRequestDto requestDto = generateUserDto();
-        user = User.builder()
-                .username(requestDto.getUserName())
-                .password(requestDto.getPassword())
-                .build();
-        user.setToken(new ApiUserRegisterEndpoint().registerUser(requestDto).getToken());
+        user = createNewUser();
     }
 
     @BeforeEach
@@ -77,5 +72,10 @@ public class ApiNewOrderTest {
         startOrders.add(order);
         assertThat(endOrders)
                 .containsExactlyInAnyOrderElementsOf(startOrders);
+    }
+
+    @AfterAll
+    static void tearDown() {
+        deleteUser(user);
     }
 }

@@ -18,11 +18,20 @@ public class HeaderElement {
 
     @Step("Авторизоваться юзером с {login} {password}")
     public ProductListPage login(String login, String password) {
-        clickLoginButton();
-        userNameInput.sendKeys(login);
+        return clickLoginButton()
+                .inputUsername(login)
+                .inputPassword(password)
+                .clickSubmitButton();
+    }
+
+    public HeaderElement inputPassword(String password) {
         passwordInput.sendKeys(password);
-        submitButton.click();
-        return new ProductListPage();
+        return this;
+    }
+
+    public HeaderElement inputUsername(String login) {
+        userNameInput.sendKeys(login);
+        return this;
     }
 
     public ProductListPage login(User user) {
@@ -35,6 +44,12 @@ public class HeaderElement {
         return this;
     }
 
+    @Step("Нажать кнопку Submit")
+    public ProductListPage clickSubmitButton() {
+        submitButton.click();
+        return new ProductListPage();
+    }
+
     @Step("Нажать кнопку Account")
     public AccountPage clickAccountButton() {
         accountButton.click();
@@ -45,6 +60,12 @@ public class HeaderElement {
     public CartPage goToCart() {
         $x("//a[.='CART']").click();
         return new CartPage();
+    }
+
+    @Step("Проверить, что отображается кнопка Logout")
+    public HeaderElement checkLogoutIsPresent() {
+        $x("//div[.='LOGOUT']").click();
+        return this;
     }
 
     @Step("Нажать ссылку 'Register here'")

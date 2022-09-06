@@ -7,6 +7,7 @@ import org.example.dto.CreateUserRequestDto;
 import org.example.dto.CreateUserResponseDto;
 import org.example.endpoints.ApiUserRegisterEndpoint;
 import org.example.extensions.ApiTestExtension;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,9 +16,12 @@ import org.modelmapper.ModelMapper;
 
 import java.util.stream.Stream;
 
+import static org.example.testdata.TestDataManager.deleteUser;
+
 @DisplayName("/api/auth/register")
 @ExtendWith({ApiTestExtension.class, AllureJunit5.class})
 public class ApiUserRegisterTest {
+    CreateUserResponseDto responseDto;
 
     public static Stream<CreateUserRequestDto> testDataUser() {
         Faker faker = new Faker();
@@ -39,7 +43,7 @@ public class ApiUserRegisterTest {
     @ParameterizedTest()
     @MethodSource("testDataUser")
     void apiUserRegisterTest(CreateUserRequestDto createUserRequestDto) {
-        CreateUserResponseDto responseDto = new ApiUserRegisterEndpoint().registerUser(createUserRequestDto);
+        responseDto = new ApiUserRegisterEndpoint().registerUser(createUserRequestDto);
 
         SoftAssertions softAssertions = new SoftAssertions();
         softAssertions.assertThat(responseDto)
@@ -53,6 +57,11 @@ public class ApiUserRegisterTest {
         softAssertions.assertThat(responseDto.getPassword()).isNotEmpty();
 
         softAssertions.assertAll();
+    }
+
+    @AfterEach
+    void tearDown() {
+        deleteUser(responseDto.getUsername());
     }
 
     // TODO: 01.09.2022 add negative tests
