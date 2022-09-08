@@ -1,15 +1,13 @@
 package org.example.test.api;
 
 import com.github.javafaker.Faker;
-import io.qameta.allure.junit5.AllureJunit5;
 import org.assertj.core.api.SoftAssertions;
 import org.example.dto.CreateUserRequestDto;
 import org.example.dto.CreateUserResponseDto;
 import org.example.endpoints.ApiUserRegisterEndpoint;
-import org.example.extensions.ApiTestExtension;
+import org.example.extensions.ApiTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.modelmapper.ModelMapper;
@@ -19,7 +17,7 @@ import java.util.stream.Stream;
 import static org.example.testdata.TestDataManager.deleteUser;
 
 @DisplayName("/api/auth/register")
-@ExtendWith({ApiTestExtension.class, AllureJunit5.class})
+@ApiTest
 public class ApiUserRegisterTest {
     CreateUserResponseDto responseDto;
 

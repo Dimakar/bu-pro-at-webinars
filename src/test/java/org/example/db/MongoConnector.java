@@ -27,10 +27,4 @@ public class MongoConnector {
         return getMongoClient().getDatabase("mobileShop").withCodecRegistry(codecRegistry);
     }
 
-
-    public static void main(String[] args) {
-        System.out.println(getDataBase().getCollection("products", PhoneDto.class)
-                .find(Filters.eq("info.name", "Apple iPhone X"))
-                .first());
-    }
 }

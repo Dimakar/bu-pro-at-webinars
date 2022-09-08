@@ -20,6 +20,6 @@ public class Order {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime dateCreated;
     private int quantity;
-    private int price;
+    private double price;
     private String name;
 }

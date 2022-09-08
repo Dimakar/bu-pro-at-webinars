@@ -1,13 +1,10 @@
 package org.example.test.ui;
 
-import io.qameta.allure.junit5.AllureJunit5;
-import org.example.extensions.ApiTestExtension;
-import org.example.extensions.UITestExtension;
+import org.example.extensions.UiTest;
 import org.example.testdata.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -16,7 +13,7 @@ import static org.example.testdata.TestDataManager.createNewUser;
 import static org.example.testdata.TestDataManager.deleteUser;
 
 @DisplayName("Покупка продуктов")
-@ExtendWith({UITestExtension.class, ApiTestExtension.class, AllureJunit5.class})
+@UiTest
 public class ProductTest {
     User user;
 

@@ -2,11 +2,10 @@ package org.example.test.ui;
 
 import com.github.javafaker.Faker;
 import org.example.dto.CreateUserRequestDto;
-import org.example.extensions.UITestExtension;
+import org.example.extensions.UiTest;
 import org.example.pages.ProductListPage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -16,10 +15,11 @@ import static com.codeborne.selenide.Selenide.open;
 import static org.example.testdata.TestDataManager.deleteUser;
 
 @DisplayName("Регистрация юзеров")
-@ExtendWith(UITestExtension.class)
+@UiTest
 public class RegisterNewUserTest {
 
     CreateUserRequestDto createUserRequestDto;
+
     public static Stream<CreateUserRequestDto> testDataUser() {
         Faker faker = new Faker();
         return Stream.of(CreateUserRequestDto.builder()
