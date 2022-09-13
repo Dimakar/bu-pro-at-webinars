@@ -24,6 +24,7 @@ public class UITestExtension implements AfterEachCallback, BeforeAllCallback {
         Selenide.clearBrowserCookies();
         Selenide.clearBrowserLocalStorage();
         WebDriverRunner.clearBrowserCache();
+        Selenide.refresh();
     }
 
     @Override

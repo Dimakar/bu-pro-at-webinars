@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 
-// TODO: 06.09.2022 divide to different models (db and api)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
