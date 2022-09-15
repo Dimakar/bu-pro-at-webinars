@@ -9,6 +9,7 @@ import java.time.Duration;
 import static com.codeborne.selenide.Selenide.$$x;
 import static com.codeborne.selenide.Selenide.$x;
 
+@Page(url = "/cart")
 public class CartPage extends BasePage {
 
     @Step("Нажать кнопку Checkout")

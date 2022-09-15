@@ -3,6 +3,7 @@ package org.example.pages;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import org.assertj.core.api.SoftAssertions;
 import org.example.dto.Info;
 import org.example.dto.PhoneDto;
 import org.openqa.selenium.By;
@@ -12,8 +13,8 @@ import java.util.stream.Collectors;
 
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.$x;
-import static org.assertj.core.api.Assertions.assertThat;
 
+@Page(url = "/")
 public class ProductListPage extends BasePage {
 
     SelenideElement filterList = $x("//div[@class='filtersList-desktop']");
@@ -32,8 +33,9 @@ public class ProductListPage extends BasePage {
         return new ProductPage();
     }
 
-    public ProductListPage openFilter(String filterName) {
-        filterList.$x(".//div[text()='" + filterName + "']").click();
+    public ProductListPage openFilters(List<String> filterNames) {
+        filterNames.forEach(filterName ->
+                filterList.$x(".//div[text()='" + filterName + "']").click());
         return this;
     }
 
@@ -59,12 +61,20 @@ public class ProductListPage extends BasePage {
                         .build())
                 .collect(Collectors.toList());
 
+        SoftAssertions softAssertions = new SoftAssertions();
         for (int i = 0; i < actualList.size(); i++) {
-            assertThat(actualList.get(i))
+            softAssertions.assertThat(actualList.get(i))
                     .usingRecursiveComparison()
                     .comparingOnlyFields("info.name", "info.price")
                     .isEqualTo(phoneList.get(i));
         }
+        softAssertions.assertAll();
         return this;
+    }
+
+    public ProductListPage selectSorting(String sortingName) {
+        $x("//div[@class='sort-field']//button").click();
+        $x("//span[@role='menuitem' and .='" + sortingName + "']").click();
+        return new ProductListPage();
     }
 }

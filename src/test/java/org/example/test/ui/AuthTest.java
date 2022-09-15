@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Selenide.open;
+import static org.example.steps.UiSteps.openPage;
 import static org.example.testdata.TestDataManager.createNewUser;
 import static org.example.testdata.TestDataManager.deleteUser;
 
@@ -22,8 +22,7 @@ public class AuthTest {
 
     @Test
     void successfulAuthTest() {
-        open("");
-        new ProductListPage()
+        openPage(ProductListPage.class)
                 .getHeaderElement()
                 .clickLoginButton()
                 .inputUsername(user.getUsername())

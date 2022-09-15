@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static com.codeborne.selenide.Selenide.open;
+import static org.example.steps.UiSteps.openPage;
 import static org.example.testdata.TestDataManager.deleteUser;
 
 @DisplayName("Регистрация юзеров")
@@ -41,9 +41,7 @@ public class RegisterNewUserTest {
     @MethodSource("testDataUser")
     void registerNewUserTest(CreateUserRequestDto createUserRequestDto) {
         this.createUserRequestDto = createUserRequestDto;
-        open("");
-
-        new ProductListPage()
+        openPage(ProductListPage.class)
                 .getHeaderElement()
                 .clickLoginButton()
                 .clickRegisterHere()
