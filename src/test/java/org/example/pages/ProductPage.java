@@ -5,6 +5,7 @@ import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Selenide.$x;
 
+@Page(url = "/product/{0}")
 public class ProductPage extends BasePage {
 
     @Step("Нажать кнопку 'Add to cart'")

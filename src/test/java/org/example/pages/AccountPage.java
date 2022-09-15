@@ -8,6 +8,7 @@ import java.time.Duration;
 
 import static com.codeborne.selenide.Selenide.$x;
 
+@Page(url = "/account")
 public class AccountPage extends BasePage {
 
     @Step("Проверить поля юзера")
